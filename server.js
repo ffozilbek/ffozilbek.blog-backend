@@ -1,23 +1,14 @@
 import express from "express";
-import path from 'path';
 import cors from "cors";
 import initDB from "./db.js";
 
-// import.meta.url yordamida joriy faylning manzilini olish
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
+// CORS ruxsatnomalarini qo'shish
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_KEY = "go2future2049";
 
-// CORS ruxsatnomalarini qo'shish
 app.use(cors({ origin: ["http://localhost:5173", "https://ffozilbek-blog.vercel.app"] }));
-
-// JSON body parser
 app.use(express.json());
-
-// Statik fayllarni xizmat ko'rsatish (React build papkasidan)
-app.use(express.static(path.join(__dirname, 'build')));
 
 // DB init
 let db;
@@ -61,7 +52,6 @@ app.post("/api/posts", async (req, res) => {
   try {
     const { title, content, imageUrl, apiKey } = req.body;
 
-    // Kalitni tekshirish
     if (apiKey !== API_KEY) {
       return res.status(403).json({ error: "Ruxsat etilmagan" });
     }
@@ -70,7 +60,6 @@ app.post("/api/posts", async (req, res) => {
       return res.status(400).json({ error: "Title va content kerak" });
     }
 
-    // Hozirgi vaqtni olish va ISO formatda yaratish
     const createdAt = new Date().toISOString();
 
     const result = await db.run(
@@ -102,7 +91,6 @@ app.delete("/api/posts/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Postni topib, o'chirish
     const result = await db.run("DELETE FROM posts WHERE id = ?", [id]);
 
     if (result.changes === 0) {
@@ -122,17 +110,14 @@ app.put("/api/posts/:id", async (req, res) => {
     const { id } = req.params;
     const { title, content, imageUrl, apiKey } = req.body;
 
-    // API kalitni tekshirish
     if (apiKey !== API_KEY) {
       return res.status(403).json({ error: "Ruxsat etilmagan" });
     }
 
-    // Majburiy maydonlar
     if (!title || !content) {
       return res.status(400).json({ error: "Title va content kerak" });
     }
 
-    // Yangilash
     const result = await db.run(
       `UPDATE posts SET title = ?, content = ?, imageUrl = ? WHERE id = ?`,
       [title, content, imageUrl || null, id]
@@ -147,9 +132,4 @@ app.put("/api/posts/:id", async (req, res) => {
     console.error("Xatolik:", error);
     res.status(500).json({ error: "Server xatoligi" });
   }
-});
-
-// React Router uchun barcha yo'naltirishlarni index.html-ga yo'naltirish
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
