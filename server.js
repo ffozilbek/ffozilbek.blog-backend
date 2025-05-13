@@ -3,7 +3,7 @@ import cors from "cors";
 import initDB from "./db.js";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const API_KEY = "go2future2049";
 
 app.use(cors({ origin: "ffozilbek-blog.vercel.app" }));
