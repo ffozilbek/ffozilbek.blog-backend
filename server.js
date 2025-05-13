@@ -3,6 +3,9 @@ import path from 'path';
 import cors from "cors";
 import initDB from "./db.js";
 
+// import.meta.url yordamida joriy faylning manzilini olish
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_KEY = "go2future2049";
