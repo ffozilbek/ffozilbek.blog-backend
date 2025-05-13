@@ -1,4 +1,5 @@
 import express from "express";
+import path from 'path';
 import cors from "cors";
 import initDB from "./db.js";
 
@@ -6,9 +7,16 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const API_KEY = "go2future2049";
 
+// CORS ruxsatnomalarini qo'shish
 app.use(cors({ origin: ["http://localhost:5173", "https://ffozilbek-blog.vercel.app"] }));
+
+// JSON body parser
 app.use(express.json());
 
+// Statik fayllarni xizmat ko'rsatish (React build papkasidan)
+app.use(express.static(path.join(__dirname, 'build')));
+
+// DB init
 let db;
 initDB().then((database) => {
   db = database;
@@ -105,6 +113,7 @@ app.delete("/api/posts/:id", async (req, res) => {
   }
 });
 
+// PUT: postni yangilash
 app.put("/api/posts/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -135,4 +144,9 @@ app.put("/api/posts/:id", async (req, res) => {
     console.error("Xatolik:", error);
     res.status(500).json({ error: "Server xatoligi" });
   }
+});
+
+// React Router uchun barcha yo'naltirishlarni index.html-ga yo'naltirish
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
