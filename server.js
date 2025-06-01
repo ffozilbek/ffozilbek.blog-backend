@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const API_KEY = "go2future2049";
 
-app.use(cors({ origin: ["http://localhost:5173", "https://ffozilbek-blog.vercel.app"] }));
+app.use(cors({ origin: ["http://localhost:5173", "https://fozilbek-blog.vercel.app"] }));
 app.use(express.json());
 
 // DB init
